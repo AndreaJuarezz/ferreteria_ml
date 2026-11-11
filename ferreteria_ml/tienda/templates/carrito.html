@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load text_utils %}
+
+{% block content %}
+
+<h2 class="text-2xl font-bold mb-6">Carrito</h2>
+
+{% if items %}
+	<div class="space-y-3 mb-6">
+		{% for item in items %}
+			<div class="border rounded-lg p-4 bg-gray-50 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+				<div>
+					<p class="font-semibold">{{ item.producto.nombre|ascii_text }}</p>
+					<p class="text-sm text-gray-500">Precio unitario: $ {{ item.producto.precio }}</p>
+					{% if item.producto.stock <= 0 %}
+						<p class="inline-block mt-2 px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">Agotado</p>
+					{% elif item.cantidad > item.producto.stock %}
+						<p class="inline-block mt-2 px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">Solo quedan {{ item.producto.stock }}</p>
+					{% endif %}
+				</div>
+
+				<form action="{% url 'actualizar_carrito' item.id %}" method="post" class="flex items-center gap-3">
+					{% csrf_token %}
+					<label class="text-sm text-gray-600" for="cantidad-{{ item.id }}">Cantidad</label>
+					<input id="cantidad-{{ item.id }}" name="cantidad" type="number" min="1" max="{{ item.max_cantidad }}" value="{{ item.cantidad }}" class="w-20 border rounded-md px-2 py-1">
+					<button type="submit" class="bg-blue-600 text-white px-3 py-2 rounded-md text-sm hover:bg-blue-700">Actualizar</button>
+				</form>
+
+				<div class="flex items-center gap-3 justify-between md:justify-end">
+					<p class="font-bold text-green-700">Subtotal: $ {{ item.subtotal }}</p>
+					<a href="{% url 'eliminar_carrito' item.id %}" class="text-red-600 hover:underline text-sm">Eliminar</a>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+
+	<div class="flex items-center justify-between border-t pt-4">
+		<h3 class="text-xl font-bold">Total: ${{ total }}</h3>
+		<form action="{% url 'checkout' %}" method="post">
+			{% csrf_token %}
+			<button type="submit" class="bg-blue-600 text-white px-5 py-3 rounded-lg shadow hover:bg-blue-700">
+				Checkout
+			</button>
+		</form>
+	</div>
+{% else %}
+	<p class="text-gray-600 mb-4">Tu carrito está vacío.</p>
+	<a href="{% url 'dashboard' %}" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Ir a productos</a>
+{% endif %}
+
+{% endblock %}

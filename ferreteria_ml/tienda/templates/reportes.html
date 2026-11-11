@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mb-6">
+    <p class="text-sm text-gray-500 uppercase tracking-wide">Analitica de uso</p>
+    <h2 class="text-3xl font-bold text-gray-900">Que productos te gustan mas y cuales compras mas</h2>
+    <p class="text-gray-600 mt-2">Este reporte resume tus vistas y compras para identificar las categorias mas afines a tu comportamiento.</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 items-start">
+    <div class="bg-white border rounded-2xl p-4 shadow-sm">
+        <p class="text-sm text-gray-500">Interacciones totales</p>
+        <h3 class="text-2xl font-bold text-gray-900">{{ total_interactions }}</h3>
+    </div>
+    <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 shadow-sm">
+        <p class="text-sm text-blue-700">Categoria favorita</p>
+        <h3 class="text-2xl font-bold text-blue-900">{{ favorite_category.nombre|default:"Sin datos" }}</h3>
+    </div>
+    <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 shadow-sm">
+        <p class="text-sm text-emerald-700">Mas comprada</p>
+        <h3 class="text-2xl font-bold text-emerald-900">{{ most_bought.nombre|default:"Sin datos" }}</h3>
+    </div>
+    <div class="bg-amber-50 border border-amber-100 rounded-2xl p-4 shadow-sm">
+        <p class="text-sm text-amber-700">Mas agregada al carrito</p>
+        <h3 class="text-2xl font-bold text-amber-900">{{ most_carted.nombre|default:"Sin datos" }}</h3>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8 items-start">
+    <section class="bg-white border rounded-2xl p-4 shadow-sm self-start">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Vistas vs Compras por categoria</h3>
+            <span class="text-xs uppercase tracking-wide text-gray-500">Grafico</span>
+        </div>
+
+        {% if chart_base64 %}
+            <img
+                src="data:image/png;base64,{{ chart_base64 }}"
+                alt="Grafico de vistas y compras por categoria"
+                class="w-full rounded-xl border"
+            >
+        {% else %}
+            <div class="bg-gray-50 border border-dashed rounded-xl p-8 text-center text-gray-500">
+                No hay suficientes datos para generar la grafica.
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="bg-white border rounded-2xl p-4 shadow-sm self-start">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Resumen por categoria</h3>
+            <span class="text-xs uppercase tracking-wide text-gray-500">Clusters simples</span>
+        </div>
+
+        <div class="space-y-3">
+            {% for cat in categories %}
+                <div class="border rounded-xl p-4 bg-gray-50">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <p class="font-semibold text-gray-900">{{ cat.nombre }}</p>
+                            <p class="text-sm text-gray-500">{{ cat.productos }} productos en la categoria</p>
+                        </div>
+                        <span class="text-sm font-medium text-gray-600">Score {{ cat.score }}</span>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                        <div class="bg-white rounded-lg p-3 border">
+                            <p class="text-gray-500">Vistas</p>
+                            <p class="font-bold text-blue-700">{{ cat.vistas }}</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border">
+                            <p class="text-gray-500">Carrito</p>
+                            <p class="font-bold text-amber-600">{{ cat.carritos }}</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border">
+                            <p class="text-gray-500">Compras</p>
+                            <p class="font-bold text-emerald-700">{{ cat.compras }}</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border">
+                            <p class="text-gray-500">Score</p>
+                            <p class="font-bold text-gray-700">{{ cat.score }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="bg-gray-50 border border-dashed rounded-xl p-8 text-center text-gray-500">
+                    No hay categorias para analizar aun.
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+    <section class="bg-white border rounded-2xl p-4 shadow-sm self-start">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Productos que mas influyen en tus gustos</h3>
+            <span class="text-xs uppercase tracking-wide text-gray-500">Top interacción</span>
+        </div>
+
+        <div class="space-y-3">
+            {% for p in top_productos %}
+                <div class="flex items-center justify-between border rounded-xl p-4 hover:bg-gray-50 transition">
+                    <div>
+                        <p class="font-medium text-gray-900">{{ p.producto__nombre_clean }}</p>
+                        <p class="text-sm text-gray-500">
+                            Vistas: {{ p.vistas }} · Carrito: {{ p.carritos }} · Compras: {{ p.compras }}
+                        </p>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-700">#{{ forloop.counter }}</span>
+                </div>
+            {% empty %}
+                <div class="bg-gray-50 border border-dashed rounded-xl p-8 text-center text-gray-500">
+                    Aun no hay interacciones suficientes.
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl p-5 shadow-lg self-start">
+        <p class="text-sm uppercase tracking-wider text-blue-100 mb-2">Interpretación</p>
+        <h3 class="text-2xl font-bold mb-3">Resumen automático</h3>
+        <p class="text-blue-50 leading-7 mb-4 max-w-2xl">
+            La categoria con mas peso de interes es <strong>{{ favorite_category.nombre|default:"sin datos" }}</strong>,
+            mientras que tus productos mas agregados al carrito apuntan a <strong>{{ most_carted.nombre|default:"sin datos" }}</strong>.
+            Esto alimenta el sistema de recomendaciones para sugerirte productos de la misma categoria o categorias relacionadas.
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm max-w-2xl">
+            <div class="bg-white/10 rounded-xl p-4">
+                <p class="text-blue-100">Mas compras</p>
+                <p class="font-semibold">{{ most_bought.nombre|default:"Sin datos" }}</p>
+            </div>
+            <div class="bg-white/10 rounded-xl p-4">
+                <p class="text-blue-100">Mas vistas</p>
+                <p class="font-semibold">{{ most_viewed.nombre|default:"Sin datos" }}</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}

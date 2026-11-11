@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8 border-2 border-gray-300">
+    
+    <!-- Encabezado del recibo -->
+    <div class="text-center border-b-2 border-gray-300 pb-6 mb-6">
+        <h1 class="text-3xl font-bold text-blue-600">🧾 RECIBO DE COMPRA</h1>
+        <p class="text-gray-600 text-sm mt-2">Ferretería - Sistema Inteligente</p>
+        <p class="text-gray-500 text-xs">Gracias por tu compra</p>
+    </div>
+
+    <!-- Información de la orden -->
+    <div class="grid grid-cols-2 gap-6 mb-6 pb-6 border-b-2 border-gray-300">
+        <div>
+            <p class="text-gray-600 text-sm"><strong>Número de orden:</strong></p>
+            <p class="text-lg font-bold text-gray-800">#{{ orden.id }}</p>
+        </div>
+        <div class="text-right">
+            <p class="text-gray-600 text-sm"><strong>Fecha:</strong></p>
+            <p class="text-lg font-bold text-gray-800">{{ orden.fecha|date:"d/m/Y H:i" }}</p>
+        </div>
+    </div>
+
+    <!-- Detalle de productos -->
+    <div class="mb-6 pb-6 border-b-2 border-gray-300">
+        <h2 class="text-lg font-bold text-gray-800 mb-4">Productos:</h2>
+        
+        <div class="space-y-3">
+        {% for detalle in orden.detalleorden_set.all %}
+            <div class="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0">
+                <div class="flex-grow">
+                    <p class="font-semibold text-gray-800">{{ detalle.producto.nombre }}</p>
+                    <p class="text-gray-600 text-sm">{{ detalle.producto.descripcion }}</p>
+                    <p class="text-gray-500 text-xs">Cantidad: {{ detalle.cantidad }}</p>
+                </div>
+                <p class="text-right font-bold text-gray-800">
+                    {% widthratio detalle.producto.precio 1 1 as precio %}
+                    ${{ precio|floatformat:2 }}
+                </p>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+
+    <!-- Total -->
+    <div class="mb-6 pb-6 border-b-2 border-gray-300">
+        <div class="flex justify-between items-center">
+            <p class="text-xl font-bold text-gray-800">Total a pagar:</p>
+            <p class="text-3xl font-bold text-green-600">${{ orden.total|floatformat:2 }}</p>
+        </div>
+    </div>
+
+    <!-- Pie del recibo -->
+    <div class="text-center pt-6">
+        <p class="text-gray-600 text-sm mb-2">✓ Compra completada exitosamente</p>
+        <p class="text-gray-500 text-xs">Mantén este recibo como comprobante</p>
+        <p class="text-gray-500 text-xs mt-4">© 2026 Ferretería</p>
+    </div>
+
+</div>
+
+<!-- Botones -->
+<div class="max-w-2xl mx-auto mt-6 flex gap-3 justify-center">
+    <a href="/historial-compras/" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 inline-block">
+        ← Volver al historial
+    </a>
+    <button onclick="window.print()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700">
+        🖨️ Imprimir
+    </button>
+    <a href="/dashboard/" class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 inline-block">
+        Seguir comprando
+    </a>
+</div>
+
+{% endblock %}

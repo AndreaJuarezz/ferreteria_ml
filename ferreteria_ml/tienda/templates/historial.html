@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="text-3xl font-bold mb-8">📋 Historial de Compras</h1>
+
+{% if ordenes %}
+    <div class="space-y-6">
+    {% for orden in ordenes %}
+        <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-600">
+            <!-- Encabezado de orden -->
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">Orden #{{ orden.id }}</h2>
+                    <p class="text-gray-600 text-sm">{{ orden.fecha|date:"d de F de Y - H:i" }}</p>
+                </div>
+                <p class="text-2xl font-bold text-green-600">${{ orden.total|floatformat:2 }}</p>
+            </div>
+            
+            <!-- Items de la orden -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                <h3 class="font-semibold text-gray-800 mb-3">Productos comprados:</h3>
+                <ul class="space-y-2">
+                {% for detalle in orden.detalleorden_set.all %}
+                    <li class="flex justify-between items-center text-gray-700 py-2 border-b border-gray-200 last:border-b-0">
+                        <div>
+                            <strong>{{ detalle.producto.nombre }}</strong>
+                            <br>
+                            <small class="text-gray-500">Cantidad: {{ detalle.cantidad }}</small>
+                        </div>
+                        <span class="text-green-600 font-semibold">${{ detalle.producto.precio|floatformat:2 }}</span>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+            
+            <!-- Acciones -->
+            <div class="flex gap-3">
+                <a href="/recibo/{{ orden.id }}/" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 inline-block">
+                    🧾 Ver recibo
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+
+{% else %}
+    <div class="bg-gray-100 rounded-lg p-12 text-center">
+        <p class="text-2xl text-gray-600 mb-6">No tienes compras aún 😢</p>
+        <a href="/dashboard/" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 inline-block">
+            Empezar a comprar
+        </a>
+    </div>
+{% endif %}
+
+<div class="mt-8">
+    <a href="/dashboard/" class="text-blue-600 hover:underline font-medium">
+        ← Volver al inicio
+    </a>
+</div>
+
+{% endblock %}

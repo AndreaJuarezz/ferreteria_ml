@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ferretería</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% load text_utils %}
+</head>
+
+<body class="bg-gray-100">
+
+<!-- NAVBAR -->
+<nav class="bg-blue-700 p-4 text-white flex justify-between">
+    <h1 class="font-bold text-lg">🔧 Ferretería</h1>
+
+    <div>
+        <a href="/login/" class="mr-4 hover:underline">Login</a>
+        <a href="/registro/" class="bg-white text-blue-700 px-3 py-1 rounded">Registrarse</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="text-center py-20 bg-blue-600 text-white">
+    <h2 class="text-4xl font-bold mb-4">Todo lo que necesitas en herramientas </h2>
+    <p class="mb-6">Compra inteligente con recomendaciones basadas en tus gustos</p>
+
+    <a href="/login/" class="bg-white text-blue-600 px-6 py-3 rounded font-bold">
+        Explorar productos
+    </a>
+</section>
+
+<!-- FEATURES -->
+<section class="py-16 px-8">
+    <h2 class="text-2xl font-bold text-center mb-10">¿Por qué elegirnos?</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        <div class="bg-white p-6 shadow rounded text-center">
+            <h3 class="font-bold text-lg mb-2">🧠 Recomendaciones inteligentes</h3>
+            <p>Usamos Machine Learning para sugerirte productos ideales</p>
+        </div>
+
+        <div class="bg-white p-6 shadow rounded text-center">
+            <h3 class="font-bold text-lg mb-2">🛒 Compra fácil</h3>
+            <p>Carrito rápido y proceso de compra sencillo</p>
+        </div>
+
+        <div class="bg-white p-6 shadow rounded text-center">
+            <h3 class="font-bold text-lg mb-2">⚡ Gran catálogo</h3>
+            <p>Más de 500,000 productos disponibles</p>
+        </div>
+
+    </div>
+</section>
+
+<!-- PRODUCT PREVIEW -->
+<section class="bg-gray-200 py-16 text-center">
+    <h2 class="text-2xl font-bold mb-6">Productos destacados</h2>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 px-8">
+        {% for producto in productos_destacados %}
+        <div class="bg-white p-4 shadow rounded text-left">
+            <p class="font-bold">{{ producto.nombre|ascii_text }}</p>
+            <p class="text-sm text-gray-500 mb-2">{{ producto.categoria.nombre|ascii_text }}</p>
+            <p class="text-green-600 font-semibold">$ {{ producto.precio }}</p>
+            <p class="text-xs text-gray-500 mt-2">Stock disponible: {{ producto.stock }}</p>
+            {% if producto.feature_score %}
+                <p class="text-xs text-blue-600 mt-1 font-semibold">Destacado por actividad reciente</p>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="bg-white p-4 shadow rounded col-span-2 md:col-span-4 text-center text-gray-600">
+            Aún no hay productos cargados para mostrar.
+        </div>
+        {% endfor %}
+
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="py-20 text-center bg-blue-700 text-white">
+    <h2 class="text-3xl font-bold mb-4">Empieza ahora</h2>
+    <p class="mb-6">Regístrate y descubre recomendaciones personalizadas</p>
+
+    <a href="/registro/" class="bg-white text-blue-700 px-6 py-3 rounded font-bold">
+        Crear cuenta
+    </a>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-gray-800 text-white text-center p-4">
+    <p>© 2026 Ferretería </p>
+</footer>
+
+</body>
+</html>

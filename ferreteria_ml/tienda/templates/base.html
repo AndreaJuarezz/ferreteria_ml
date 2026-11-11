@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ferretería</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Tailwind -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- Fuente -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 flex flex-col min-h-screen">
+
+    <!-- NAVBAR -->
+    <nav class="bg-gradient-to-r from-blue-600 to-blue-800 shadow-lg">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            
+            <!-- Logo -->
+            <h1 class="text-white text-xl font-bold tracking-wide">
+                🔧 Ferretería
+            </h1>
+
+            <!-- Links -->
+            <div class="space-x-6">
+                <a href="/dashboard/" class="text-white hover:text-gray-200 font-medium">
+                    Inicio
+                </a>
+                <a href="{% url 'productos_list' %}" class="text-white hover:text-gray-200 font-medium">
+                    Productos
+                </a>
+                <a href="{% url 'historial_compras' %}" class="text-white hover:text-gray-200 font-medium">
+                    Historial
+                </a>
+                <a href="{% url 'reportes' %}" class="text-white hover:text-gray-200 font-medium">
+                    Reportes
+                </a>
+                <a href="/carrito/" class="text-white hover:text-gray-200 font-medium">
+                    Carrito 🛒
+                </a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="bg-white text-blue-700 px-4 py-2 rounded-lg shadow hover:bg-gray-200 transition">
+                        Cerrar sesión
+                    </a>
+                {% else %}
+                    <a href="/registro/" class="bg-white text-blue-700 px-4 py-2 rounded-lg shadow hover:bg-gray-200 transition">
+                        Registro
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO -->
+    <main class="flex-grow container mx-auto px-6 py-8">
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            {% if messages %}
+                <div class="space-y-3 mb-6">
+                    {% for message in messages %}
+                        <div class="px-4 py-3 rounded-lg border text-sm {% if message.tags == 'error' %}bg-red-50 border-red-200 text-red-700{% elif message.tags == 'success' %}bg-green-50 border-green-200 text-green-700{% else %}bg-blue-50 border-blue-200 text-blue-700{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-800 text-white text-center py-4 mt-6">
+        <p class="text-sm">© 2026 Ferretería - Sistema Inteligente</p>
+    </footer>
+
+</body>
+</html>

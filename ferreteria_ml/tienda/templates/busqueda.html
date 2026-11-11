@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load text_utils %}
+
+{% block content %}
+
+<h1 class="text-3xl font-bold mb-2">🔍 Resultados de búsqueda</h1>
+    <p class="text-gray-600 mb-6">Busqueda para: <strong>"{{ query|ascii_text }}"</strong></p>
+
+<!-- Buscador de nuevo -->
+<div class="mb-8">
+    <form method="GET" action="/buscar/" class="flex gap-2">
+        <input type="text" name="q" value="{{ query }}" placeholder="Buscar productos..." class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700">Buscar</button>
+    </form>
+</div>
+
+{% if resultados %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    {% for p in resultados %}
+        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+            <!-- Encabezado de tarjeta -->
+            <div class="mb-3">
+                <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">{{ p.categoria.nombre|ascii_text }}</span>
+            </div>
+            
+            <!-- Nombre del producto -->
+            <h3 class="text-lg font-bold text-gray-900 mb-2">{{ p.nombre|ascii_text }}</h3>
+            
+            <!-- Descripción -->
+            <p class="text-gray-600 text-sm mb-3">{{ p.descripcion|ascii_text }}</p>
+            
+            <!-- Stock -->
+            {% if p.stock > 0 %}
+                <p class="text-gray-500 text-xs mb-3">Stock: <strong>{{ p.stock }}</strong> unidades</p>
+            {% else %}
+                <p class="inline-block mb-3 px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">Agotado</p>
+            {% endif %}
+            
+            <!-- Precio -->
+            <p class="text-2xl font-bold text-green-600 mb-4">${{ p.precio }}</p>
+            
+            <!-- Botón agregar a carrito -->
+            <div class="grid grid-cols-2 gap-2">
+                <a href="{% url 'ver_producto' p.id %}" class="block w-full bg-blue-600 text-white py-2 rounded-lg text-center font-semibold hover:bg-blue-700 transition">
+                    Ver
+                </a>
+                {% if p.stock > 0 %}
+                    <form action="{% url 'agregar_carrito' p.id %}" method="post" class="block w-full">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <input type="hidden" name="cantidad" value="1">
+                        <button type="submit" class="block w-full bg-green-500 text-white py-2 rounded-lg text-center font-semibold hover:bg-green-600 transition">
+                            🛒 Agregar al carrito
+                        </button>
+                    </form>
+                {% else %}
+                    <span class="block w-full bg-gray-300 text-gray-600 py-2 rounded-lg text-center font-semibold cursor-not-allowed">
+                        Agotado
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+
+    <p class="text-center text-gray-600 mt-8">Se encontraron <strong>{{ resultados|length }}</strong> productos.</p>
+
+{% else %}
+    <div class="bg-gray-100 rounded-lg p-12 text-center">
+        <p class="text-2xl text-gray-600 mb-6">No se encontraron productos</p>
+        <a href="/dashboard/" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 inline-block">
+            Volver al inicio
+        </a>
+    </div>
+{% endif %}
+
+{% endblock %}

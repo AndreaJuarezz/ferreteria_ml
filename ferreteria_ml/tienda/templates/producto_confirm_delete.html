@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load text_utils %}
+
+{% block content %}
+<div class="max-w-xl mx-auto bg-white border rounded-xl shadow-sm p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">Eliminar producto</h2>
+    <p class="text-gray-600 mb-6">
+        ¿Seguro que deseas eliminar <span class="font-semibold">{{ producto.nombre|ascii_text }}</span>?
+    </p>
+
+    <form method="post" class="flex items-center gap-3">
+        {% csrf_token %}
+        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700 transition">
+            Sí, eliminar
+        </button>
+        <a href="{% url 'productos_list' %}" class="text-gray-600 hover:text-gray-800 text-sm">
+            Cancelar
+        </a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load text_utils %}
+
+{% block content %}
+
+<section class="mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <a href="{% url 'productos_list' %}" class="bg-purple-50 border border-purple-200 rounded-xl p-4 shadow-sm hover:shadow-md transition">
+            <p class="text-sm text-purple-700 font-semibold">Inventario</p>
+            <h3 class="text-lg font-bold text-gray-800">Productos</h3>
+            <p class="text-sm text-gray-600">Gestiona, crea, edita y elimina productos.</p>
+        </a>
+        <a href="{% url 'historial_compras' %}" class="bg-blue-50 border border-blue-200 rounded-xl p-4 shadow-sm hover:shadow-md transition">
+            <p class="text-sm text-blue-700 font-semibold">Compras</p>
+            <h3 class="text-lg font-bold text-gray-800">Historial</h3>
+            <p class="text-sm text-gray-600">Revisa tus órdenes y recibos anteriores.</p>
+        </a>
+        <a href="{% url 'reportes' %}" class="bg-green-50 border border-green-200 rounded-xl p-4 shadow-sm hover:shadow-md transition">
+            <p class="text-sm text-green-700 font-semibold">Analítica</p>
+            <h3 class="text-lg font-bold text-gray-800">Reportes</h3>
+            <p class="text-sm text-gray-600">Consulta productos más comprados y categorías destacadas.</p>
+        </a>
+        <a href="{% url 'carrito' %}" class="bg-amber-50 border border-amber-200 rounded-xl p-4 shadow-sm hover:shadow-md transition">
+            <p class="text-sm text-amber-700 font-semibold">Compra</p>
+            <h3 class="text-lg font-bold text-gray-800">Tu Carrito</h3>
+            <p class="text-sm text-gray-600">Finaliza tu compra cuando estés listo.</p>
+        </a>
+    </div>
+
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold">Productos</h2>
+        <form action="{% url 'buscar' %}" method="get" class="flex gap-2">
+            <input
+                type="text"
+                name="q"
+                placeholder="Buscar producto..."
+                class="border rounded px-3 py-2 w-64"
+            >
+            <button class="bg-blue-600 text-white px-4 py-2 rounded" type="submit">Buscar</button>
+        </form>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    {% for p in productos %}
+        <div class="bg-white p-4 shadow rounded-lg border border-gray-100">
+            <h3 class="font-semibold text-lg mb-1">{{ p.nombre|ascii_text }}</h3>
+            <p class="text-sm text-gray-500 mb-2">{{ p.categoria.nombre|ascii_text }}</p>
+            <p class="font-bold text-green-700 mb-3">$ {{ p.precio }}</p>
+            {% if p.stock <= 0 %}
+                <p class="inline-block mb-3 px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">Agotado</p>
+            {% else %}
+                <p class="inline-block mb-3 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">Stock: {{ p.stock }}</p>
+            {% endif %}
+            <div class="flex gap-2 flex-wrap">
+                <a href="{% url 'ver_producto' p.id %}" class="inline-block bg-blue-600 text-white px-3 py-2 rounded">Ver</a>
+                {% if p.stock > 0 %}
+                    <form action="{% url 'agregar_carrito' p.id %}" method="post" class="inline-block">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <input type="hidden" name="cantidad" value="1">
+                        <button type="submit" class="bg-green-600 text-white px-3 py-2 rounded">Agregar al carrito</button>
+                    </form>
+                {% else %}
+                    <span class="inline-block bg-gray-300 text-gray-600 px-3 py-2 rounded cursor-not-allowed">Sin stock</span>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-gray-600">No hay productos para mostrar.</p>
+    {% endfor %}
+    </div>
+</section>
+
+<section>
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold">Inspirado en lo que te gusta</h2>
+        <span class="text-sm text-gray-500">Basado en tus vistas y compras</span>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    {% for r in recomendaciones %}
+        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200 shadow-sm">
+            <h3 class="font-semibold text-lg mb-1">{{ r.nombre|ascii_text }}</h3>
+            <p class="text-sm text-gray-600 mb-2">{{ r.categoria.nombre|ascii_text }}</p>
+            <p class="font-bold text-amber-700 mb-3">$ {{ r.precio }}</p>
+            {% if r.stock <= 0 %}
+                <p class="inline-block mb-3 px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">Agotado</p>
+            {% else %}
+                <p class="inline-block mb-3 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">Stock: {{ r.stock }}</p>
+            {% endif %}
+            <div class="flex gap-2 flex-wrap">
+                <a href="{% url 'ver_producto' r.id %}" class="inline-block bg-blue-600 text-white px-3 py-2 rounded">Ver</a>
+                {% if r.stock > 0 %}
+                    <form action="{% url 'agregar_carrito' r.id %}" method="post" class="inline-block">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <input type="hidden" name="cantidad" value="1">
+                        <button type="submit" class="bg-amber-500 text-black px-3 py-2 rounded">Probar producto</button>
+                    </form>
+                {% else %}
+                    <span class="inline-block bg-gray-300 text-gray-600 px-3 py-2 rounded cursor-not-allowed">Agotado</span>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-gray-600">Aún no hay recomendaciones para este usuario.</p>
+    {% endfor %}
+    </div>
+</section>
+
+{% endblock %}

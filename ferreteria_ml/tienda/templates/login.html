@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="flex justify-center items-center min-h-[70vh]">
+
+    <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl">
+
+        <!-- Título -->
+        <h2 class="text-2xl font-bold text-center text-gray-700 mb-6">
+            Iniciar Sesión
+        </h2>
+
+        <!-- Formulario -->
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+
+            <!-- Usuario -->
+            <div>
+                <label class="block text-gray-600 mb-1">Usuario</label>
+                <input name="username"
+                       placeholder="Ingresa tu usuario"
+                       class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+
+            <!-- Password -->
+            <div>
+                <label class="block text-gray-600 mb-1">Contraseña</label>
+                <input name="password"
+                       type="password"
+                       placeholder="••••••••"
+                       class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+
+            <!-- Botón -->
+            <button type="submit"
+                    class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition shadow-md font-semibold">
+                Entrar
+            </button>
+        </form>
+
+        <!-- Extra -->
+        <p class="text-sm text-gray-500 text-center mt-6">
+            ¿No tienes cuenta?
+            <a href="/registro/" class="text-blue-600 hover:underline font-medium">
+                Regístrate
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}
